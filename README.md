@@ -119,6 +119,10 @@ To regenerate the icon, run `tools\make-icon.ps1`.
 | `install.ps1` / `uninstall.ps1` | Per-user install and removal |
 | `LICENSE` | MIT license |
 
+## For AI agents
+
+If you're an AI coding agent working on this repository, read [AGENTS.md](AGENTS.md) first. It covers the code layout, the behaviour that must not break (click-through, hook entries, the data folder name), how to test, and what to check with the user before changing anything.
+
 ## License
 
 MIT. See [LICENSE](LICENSE).
