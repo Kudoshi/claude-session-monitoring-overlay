@@ -1,0 +1,150 @@
+<Window x:Class="ClaudeOverlay.OverlayWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Claude overlay"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        Topmost="True" ShowInTaskbar="False" ResizeMode="NoResize" ShowActivated="False"
+        SizeToContent="Height" Width="340"
+        FontFamily="Segoe UI Variable Text, Segoe UI" FontSize="13"
+        TextOptions.TextFormattingMode="Display">
+    <Window.Resources>
+        <FontFamily x:Key="Icons">Segoe Fluent Icons, Segoe MDL2 Assets</FontFamily>
+        <Style x:Key="TileNumber" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="RenderTransformOrigin" Value="0.3,0.5"/>
+        </Style>
+        <Style x:Key="TileLabel" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Foreground" Value="{DynamicResource Muted}"/>
+        </Style>
+        <Style x:Key="SectionTitle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="{DynamicResource Fg}"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="SectionCount" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="{DynamicResource Muted}"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="DockPanel.Dock" Value="Right"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="8">
+        <Border x:Name="LiveOutline" CornerRadius="19" BorderBrush="#378ADD" BorderThickness="2" Margin="-4" Opacity="0"/>
+        <Border x:Name="Card" CornerRadius="16" Background="{DynamicResource Bg}" BorderBrush="{DynamicResource Line}"
+                BorderThickness="1" RenderTransformOrigin="0.5,0.5">
+            <Border.RenderTransform>
+                <ScaleTransform x:Name="CardScale" ScaleX="1" ScaleY="1"/>
+            </Border.RenderTransform>
+            <StackPanel>
+                <!-- drag bar -->
+                <Border x:Name="DragBar" Padding="12,8" Background="Transparent" CornerRadius="16,16,0,0"
+                        BorderBrush="{DynamicResource Line}" BorderThickness="0,0,0,1"
+                        MouseLeftButtonDown="DragBar_MouseLeftButtonDown">
+                    <DockPanel LastChildFill="True">
+                        <Image Source="pack://application:,,,/app.ico" Width="18" Height="18" Margin="0,0,8,0"
+                               VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        <Button x:Name="GearButton" DockPanel.Dock="Right" Click="GearButton_Click" Opacity="0.35"
+                                Cursor="Hand" Focusable="False" RenderTransformOrigin="0.5,0.5" ToolTip="Settings">
+                            <Button.RenderTransform><RotateTransform x:Name="GearRotate"/></Button.RenderTransform>
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="Transparent" Padding="2">
+                                        <TextBlock Text="&#xE713;" FontFamily="{StaticResource Icons}" FontSize="15"
+                                                   Foreground="{DynamicResource Muted}"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                        <TextBlock x:Name="Hint" Text="Hold Ctrl to interact" FontSize="11"
+                                   Foreground="{DynamicResource Muted}" VerticalAlignment="Center"/>
+                    </DockPanel>
+                </Border>
+
+                <!-- tiles -->
+                <Grid Margin="12,12,12,2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/><ColumnDefinition/><ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Border Grid.Column="0" Background="{DynamicResource TileBg}" CornerRadius="10" Padding="10,7" Margin="0,0,4,0">
+                        <StackPanel>
+                            <TextBlock x:Name="InputCount" Text="0" Foreground="{DynamicResource Amber}" Style="{StaticResource TileNumber}">
+                                <TextBlock.RenderTransform><ScaleTransform/></TextBlock.RenderTransform>
+                            </TextBlock>
+                            <TextBlock Text="need you" Style="{StaticResource TileLabel}"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Column="1" Background="{DynamicResource TileBg}" CornerRadius="10" Padding="10,7" Margin="2,0,2,0">
+                        <StackPanel>
+                            <TextBlock x:Name="RunningCount" Text="0" Foreground="{DynamicResource Blue}" Style="{StaticResource TileNumber}">
+                                <TextBlock.RenderTransform><ScaleTransform/></TextBlock.RenderTransform>
+                            </TextBlock>
+                            <TextBlock Text="running" Style="{StaticResource TileLabel}"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Column="2" Background="{DynamicResource TileBg}" CornerRadius="10" Padding="10,7" Margin="4,0,0,0">
+                        <StackPanel>
+                            <TextBlock x:Name="DoneCount" Text="0" Foreground="{DynamicResource Green}" Style="{StaticResource TileNumber}">
+                                <TextBlock.RenderTransform><ScaleTransform/></TextBlock.RenderTransform>
+                            </TextBlock>
+                            <TextBlock Text="done" Style="{StaticResource TileLabel}"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- shown until the Claude Code hook is installed -->
+                <Border x:Name="HookBanner" Margin="12,10,12,0" Padding="10,8" CornerRadius="10"
+                        Background="{DynamicResource AmBg}" Visibility="Collapsed"
+                        MouseLeftButtonUp="HookBanner_Click">
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Right" Text="&#xE711;" FontFamily="{StaticResource Icons}" FontSize="10"
+                                   Foreground="{DynamicResource AmFg}" VerticalAlignment="Top" Margin="8,2,0,0" Padding="2"
+                                   Background="Transparent" ToolTip="Hide" MouseLeftButtonUp="HookBannerClose_Click"/>
+                        <TextBlock DockPanel.Dock="Left" Text="&#xE946;" FontFamily="{StaticResource Icons}" FontSize="14"
+                                   Foreground="{DynamicResource AmFg}" VerticalAlignment="Center" Margin="0,0,9,0"/>
+                        <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{DynamicResource AmFg}">
+                            <Run Text="Turn on Needs input" FontWeight="SemiBold"/><LineBreak/>
+                            <Run Text="Ctrl+click to install the Claude Desktop hook"/>
+                        </TextBlock>
+                    </DockPanel>
+                </Border>
+
+                <StackPanel Margin="12,0,12,12">
+                    <!-- needs input -->
+                    <DockPanel Margin="0,12,0,4">
+                        <Grid Width="10" Height="10" Margin="0,0,9,0" VerticalAlignment="Center">
+                            <Ellipse x:Name="InputRing" Width="18" Height="18" Margin="-4" Stroke="{DynamicResource Amber}" StrokeThickness="2"
+                                     Opacity="0" RenderTransformOrigin="0.5,0.5">
+                                <Ellipse.RenderTransform><ScaleTransform x:Name="InputRingScale"/></Ellipse.RenderTransform>
+                            </Ellipse>
+                            <Ellipse Width="9" Height="9" Fill="{DynamicResource Amber}"/>
+                        </Grid>
+                        <TextBlock x:Name="InputHeaderCount" Style="{StaticResource SectionCount}"/>
+                        <TextBlock Text="Needs input" Style="{StaticResource SectionTitle}"/>
+                    </DockPanel>
+                    <StackPanel x:Name="InputList"/>
+
+                    <!-- running -->
+                    <DockPanel Margin="0,12,0,4">
+                        <Ellipse Width="9" Height="9" Fill="{DynamicResource Blue}" Margin="0,0,9,0" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="RunningHeaderCount" Style="{StaticResource SectionCount}"/>
+                        <TextBlock Text="Running" Style="{StaticResource SectionTitle}"/>
+                    </DockPanel>
+                    <StackPanel x:Name="RunningList"/>
+
+                    <!-- done -->
+                    <DockPanel Margin="0,12,0,4">
+                        <Ellipse Width="9" Height="9" Fill="{DynamicResource Green}" Margin="0,0,9,0" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="DoneHeaderCount" Style="{StaticResource SectionCount}"/>
+                        <TextBlock Text="Done" Style="{StaticResource SectionTitle}"/>
+                    </DockPanel>
+                    <StackPanel x:Name="DoneList"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

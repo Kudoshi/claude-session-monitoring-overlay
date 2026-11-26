@@ -1,0 +1,164 @@
+<Window x:Class="ClaudeOverlay.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Claude overlay settings" Icon="pack://application:,,,/app.ico" Width="360" SizeToContent="Height" ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen" Topmost="True"
+        Background="{DynamicResource SBg}" Foreground="{DynamicResource SFg}"
+        FontFamily="Segoe UI Variable Text, Segoe UI" FontSize="13">
+    <Window.Resources>
+        <Style x:Key="Label" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource SMuted}"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Margin" Value="0,14,0,5"/>
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="Foreground" Value="{DynamicResource SFg}"/>
+            <Setter Property="Background" Value="{DynamicResource SCtlBg}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource SLine}"/>
+            <Setter Property="Padding" Value="10,4"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="B" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1" CornerRadius="7" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="B" Property="BorderBrush" Value="{DynamicResource SMuted}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="B" Property="Opacity" Value="0.8"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="CheckBox">
+            <Setter Property="Foreground" Value="{DynamicResource SFg}"/>
+        </Style>
+    </Window.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <StackPanel Margin="20,16,20,20">
+        <TextBlock Text="Settings" FontSize="18" FontWeight="SemiBold"/>
+
+        <DockPanel Margin="0,14,0,5">
+            <TextBlock x:Name="OpacityValue" DockPanel.Dock="Right" Foreground="{DynamicResource SFg}" FontSize="12"/>
+            <TextBlock Text="Overall opacity" Foreground="{DynamicResource SMuted}" FontSize="12"/>
+        </DockPanel>
+        <Slider x:Name="OpacitySlider" Minimum="20" Maximum="100" TickFrequency="5" IsSnapToTickEnabled="True"
+                ValueChanged="OpacitySlider_ValueChanged"/>
+        <TextBlock Text="Tip: hold Ctrl over the overlay and press 1–5." FontSize="11"
+                   Foreground="{DynamicResource SMuted}" Margin="0,4,0,0"/>
+
+        <DockPanel Margin="0,14,0,5">
+            <TextBlock x:Name="CtrlOpacityValue" DockPanel.Dock="Right" Foreground="{DynamicResource SFg}" FontSize="12"/>
+            <TextBlock Text="Opacity while holding Ctrl" Foreground="{DynamicResource SMuted}" FontSize="12"/>
+        </DockPanel>
+        <Slider x:Name="CtrlOpacitySlider" Minimum="20" Maximum="100" TickFrequency="5" IsSnapToTickEnabled="True"
+                ValueChanged="CtrlOpacitySlider_ValueChanged"/>
+
+        <Border Background="{DynamicResource SCtlBg}" CornerRadius="10" Padding="12,4,12,12" Margin="0,12,0,0">
+            <StackPanel>
+                <DockPanel Margin="0,10,0,4">
+                    <TextBlock x:Name="BgValue" DockPanel.Dock="Right" Foreground="{DynamicResource SFg}" FontSize="12"/>
+                    <TextBlock Text="Background" Foreground="{DynamicResource SMuted}" FontSize="12"/>
+                </DockPanel>
+                <Slider x:Name="BgSlider" Minimum="0" Maximum="100" TickFrequency="5" IsSnapToTickEnabled="True"
+                        ValueChanged="LayerSlider_ValueChanged"/>
+                <DockPanel Margin="0,10,0,4">
+                    <TextBlock x:Name="CardValue" DockPanel.Dock="Right" Foreground="{DynamicResource SFg}" FontSize="12"/>
+                    <TextBlock Text="Rows, tiles and badges" Foreground="{DynamicResource SMuted}" FontSize="12"/>
+                </DockPanel>
+                <Slider x:Name="CardSlider" Minimum="0" Maximum="100" TickFrequency="5" IsSnapToTickEnabled="True"
+                        ValueChanged="LayerSlider_ValueChanged"/>
+                <DockPanel Margin="0,10,0,4">
+                    <TextBlock x:Name="TextValue" DockPanel.Dock="Right" Foreground="{DynamicResource SFg}" FontSize="12"/>
+                    <TextBlock Text="Text and icons" Foreground="{DynamicResource SMuted}" FontSize="12"/>
+                </DockPanel>
+                <Slider x:Name="TextSlider" Minimum="15" Maximum="100" TickFrequency="5" IsSnapToTickEnabled="True"
+                        ValueChanged="LayerSlider_ValueChanged"/>
+                <Button Content="Reset layers" HorizontalAlignment="Left" Margin="0,10,0,0" Click="ResetLayers_Click"/>
+            </StackPanel>
+        </Border>
+
+        <TextBlock Text="Theme" Style="{StaticResource Label}"/>
+        <ComboBox x:Name="ThemeBox" SelectionChanged="ThemeBox_SelectionChanged">
+            <ComboBoxItem Content="Dark" Tag="dark"/>
+            <ComboBoxItem Content="Light" Tag="light"/>
+            <ComboBoxItem Content="Follow Windows" Tag="system"/>
+        </ComboBox>
+
+        <TextBlock Text="Done sound" Style="{StaticResource Label}"/>
+        <DockPanel>
+            <Button x:Name="TestDone" DockPanel.Dock="Right" Content="Test" Margin="8,0,0,0" Click="TestDone_Click"/>
+            <ComboBox x:Name="DoneBox" SelectionChanged="DoneBox_SelectionChanged"/>
+        </DockPanel>
+        <DockPanel x:Name="DoneFileRow" Margin="0,6,0,0" Visibility="Collapsed">
+            <Button DockPanel.Dock="Right" Content="Choose…" Margin="8,0,0,0" Click="ChooseDone_Click"/>
+            <TextBlock x:Name="DoneFileText" Foreground="{DynamicResource SMuted}" FontSize="11"
+                       TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+        </DockPanel>
+
+        <TextBlock Text="Needs input sound" Style="{StaticResource Label}"/>
+        <DockPanel>
+            <Button x:Name="TestInput" DockPanel.Dock="Right" Content="Test" Margin="8,0,0,0" Click="TestInput_Click"/>
+            <ComboBox x:Name="InputBox" SelectionChanged="InputBox_SelectionChanged"/>
+        </DockPanel>
+        <DockPanel x:Name="InputFileRow" Margin="0,6,0,0" Visibility="Collapsed">
+            <Button DockPanel.Dock="Right" Content="Choose…" Margin="8,0,0,0" Click="ChooseInput_Click"/>
+            <TextBlock x:Name="InputFileText" Foreground="{DynamicResource SMuted}" FontSize="11"
+                       TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+        </DockPanel>
+
+        <DockPanel Margin="0,14,0,5">
+            <TextBlock x:Name="VolumeValue" DockPanel.Dock="Right" Foreground="{DynamicResource SFg}" FontSize="12"/>
+            <TextBlock Text="Volume" Foreground="{DynamicResource SMuted}" FontSize="12"/>
+        </DockPanel>
+        <Slider x:Name="VolumeSlider" Minimum="0" Maximum="100" TickFrequency="5" IsSnapToTickEnabled="True"
+                ValueChanged="VolumeSlider_ValueChanged"/>
+
+        <CheckBox x:Name="StartupBox" Content="Start with Windows" Margin="0,16,0,0"
+                  Checked="StartupBox_Changed" Unchecked="StartupBox_Changed"/>
+
+        <TextBlock Text="Hooks" FontSize="14" FontWeight="SemiBold" Margin="0,22,0,0"/>
+
+        <Border Background="{DynamicResource SCtlBg}" BorderBrush="{DynamicResource SLine}" BorderThickness="1"
+                CornerRadius="10" Padding="12,10" Margin="0,8,0,0">
+            <StackPanel>
+                <DockPanel>
+                    <Border x:Name="DesktopPill" DockPanel.Dock="Right" CornerRadius="9" Padding="8,2" VerticalAlignment="Center">
+                        <TextBlock x:Name="DesktopPillText" FontSize="11"/>
+                    </Border>
+                    <TextBlock Text="Claude Desktop hook" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                </DockPanel>
+                <TextBlock x:Name="DesktopStatus" TextWrapping="Wrap" FontSize="12" Foreground="{DynamicResource SMuted}" Margin="0,6,0,10"/>
+                <Button x:Name="DesktopButton" HorizontalAlignment="Left" Click="DesktopButton_Click"/>
+            </StackPanel>
+        </Border>
+
+        <Border Background="{DynamicResource SCtlBg}" BorderBrush="{DynamicResource SLine}" BorderThickness="1"
+                CornerRadius="10" Padding="12,10" Margin="0,8,0,0">
+            <StackPanel>
+                <DockPanel>
+                    <Border x:Name="CodePill" DockPanel.Dock="Right" CornerRadius="9" Padding="8,2" VerticalAlignment="Center">
+                        <TextBlock x:Name="CodePillText" FontSize="11"/>
+                    </Border>
+                    <TextBlock Text="Claude Code hook" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                </DockPanel>
+                <TextBlock x:Name="CodeStatus" TextWrapping="Wrap" FontSize="12" Foreground="{DynamicResource SMuted}" Margin="0,6,0,10"/>
+                <Button x:Name="CodeButton" HorizontalAlignment="Left" Click="CodeButton_Click"/>
+            </StackPanel>
+        </Border>
+
+        <TextBlock Text="Both hooks share one entry set in ~/.claude/settings.json (backed up first). It stays installed while either is on."
+                   TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource SMuted}" Margin="0,8,0,0"/>
+
+        <TextBlock Text="Launch: Start menu → Claude Overlay. Quit or reset position from the tray icon." TextWrapping="Wrap"
+                   FontSize="11" Foreground="{DynamicResource SMuted}" Margin="0,14,0,0"/>
+    </StackPanel>
+    </ScrollViewer>
+</Window>
