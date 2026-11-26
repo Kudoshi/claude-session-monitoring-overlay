@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Media;
 using Microsoft.Win32;
 
-namespace ClaudeOverlay;
+namespace ClaudeSessionMonitoringOverlay;
 
 public sealed class AppSettings
 {
@@ -53,7 +53,22 @@ public sealed class AppSettings
 internal static class StartupEntry
 {
     private const string RunKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
-    private const string Name = "ClaudeOverlay";
+    private const string Name = "ClaudeSessionMonitoringOverlay";
+
+    /// <summary>Earlier builds used the Run value name "ClaudeOverlay". Move it to the new name, pointing at this exe.</summary>
+    public static void MigrateLegacy()
+    {
+        try
+        {
+            using var k = Registry.CurrentUser.OpenSubKey(RunKey, writable: true);
+            if (k?.GetValue("ClaudeOverlay") is string)
+            {
+                k.SetValue(Name, "\"" + Environment.ProcessPath + "\"");
+                k.DeleteValue("ClaudeOverlay", false);
+            }
+        }
+        catch { }
+    }
 
     public static bool IsEnabled()
     {

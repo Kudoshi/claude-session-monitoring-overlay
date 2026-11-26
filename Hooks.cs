@@ -5,7 +5,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace ClaudeOverlay;
+namespace ClaudeSessionMonitoringOverlay;
 
 /// <summary>Runs inside a Claude Code hook. Reads the event JSON from stdin and writes one small status file per session.</summary>
 internal static class HookWriter
@@ -163,7 +163,15 @@ internal static class HookSwitches
     }
 
     public static bool IsOn(AppSettings s, bool desktop) =>
-        (desktop ? s.TrackDesktop : s.TrackCli) == true && HookInstaller.IsInstalled();
+        (desktop ? s.TrackDesktop : s.TrackCli) == true;
+
+    /// <summary>Runs at startup. If a switch is on but the entries are missing or point at another copy of the app
+    /// (after the rename or a move), re-point them at this exe.</summary>
+    public static void Reconcile(AppSettings s, string exePath)
+    {
+        if (s.TrackDesktop != true && s.TrackCli != true) return;
+        if (!HookInstaller.PointsTo(exePath)) HookInstaller.Install(exePath);
+    }
 
     public static bool Set(AppSettings s, bool desktop, bool on)
     {
@@ -208,7 +216,8 @@ internal static class HookInstaller
     private static bool IsOurs(JsonNode? hookEntry)
     {
         var cmd = hookEntry?["command"]?.GetValue<string>() ?? "";
-        return cmd.Contains("ClaudeOverlay.exe", StringComparison.OrdinalIgnoreCase) && cmd.Contains("--hook");
+        bool ours = cmd.Contains("ClaudeSessionMonitoringOverlay.exe", StringComparison.OrdinalIgnoreCase) || cmd.Contains("ClaudeOverlay.exe", StringComparison.OrdinalIgnoreCase);
+        return ours && cmd.Contains("--hook");
     }
 
     public static bool IsInstalled()
@@ -220,6 +229,33 @@ internal static class HookInstaller
             if (root?["hooks"] is not JsonObject hooks) return false;
             return hooks.Any(kv => kv.Value is JsonArray arr &&
                 arr.Any(m => m?["hooks"] is JsonArray hs && hs.Any(IsOurs)));
+        }
+        catch { return false; }
+    }
+
+    /// <summary>True when our hook entries exist and all of them run this exact exe (not an old copy).</summary>
+    public static bool PointsTo(string exePath)
+    {
+        try
+        {
+            if (!File.Exists(Paths.ClaudeSettings)) return false;
+            var root = JsonNode.Parse(File.ReadAllText(Paths.ClaudeSettings)) as JsonObject;
+            if (root?["hooks"] is not JsonObject hooks) return false;
+            string want = CommandFor(exePath);
+            bool any = false;
+            foreach (var kv in hooks)
+            {
+                if (kv.Value is not JsonArray arr) continue;
+                foreach (var m in arr)
+                    if (m?["hooks"] is JsonArray hs)
+                        foreach (var h in hs)
+                            if (IsOurs(h))
+                            {
+                                any = true;
+                                if (h?["command"]?.GetValue<string>() != want) return false;
+                            }
+            }
+            return any;
         }
         catch { return false; }
     }

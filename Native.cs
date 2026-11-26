@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace ClaudeOverlay;
+namespace ClaudeSessionMonitoringOverlay;
 
 internal static class Native
 {

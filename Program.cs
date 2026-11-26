@@ -4,7 +4,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 
-namespace ClaudeOverlay;
+namespace ClaudeSessionMonitoringOverlay;
 
 public static class Program
 {
@@ -14,7 +14,13 @@ public static class Program
         // Hook mode: Claude Code runs this with the event JSON on stdin. Must stay fast and silent.
         if (args.Length > 0 && args[0] == "--hook") return HookWriter.Run();
         if (args.Length > 0 && args[0] == "--install-hook") return HookInstaller.Install(Environment.ProcessPath!) ? 0 : 1;
-        if (args.Length > 0 && args[0] == "--uninstall-hook") return HookInstaller.Uninstall() ? 0 : 1;
+        if (args.Length > 0 && args[0] == "--uninstall-hook")
+        {
+            // Removing the hook also switches both hook options off, so it isn't re-added at next launch.
+            var st = AppSettings.Load();
+            st.TrackDesktop = false; st.TrackCli = false; st.Save();
+            return HookInstaller.Uninstall() ? 0 : 1;
+        }
 
         return RunGui();
     }
@@ -23,7 +29,7 @@ public static class Program
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
     private static int RunGui()
     {
-        using var mutex = new Mutex(true, "ClaudeOverlay.SingleInstance", out bool created);
+        using var mutex = new Mutex(true, "ClaudeSessionMonitoringOverlay.SingleInstance", out bool created);
         if (!created) return 0;
 
         var app = new App();
@@ -43,6 +49,8 @@ public sealed class App : Application
         Directory.CreateDirectory(Paths.Data);
         var settings = AppSettings.Load();
         HookSwitches.Migrate(settings);
+        StartupEntry.MigrateLegacy();
+        HookSwitches.Reconcile(settings, Environment.ProcessPath!);
         Theme.Apply(settings);
         Sounds.EnsureBuiltins();
 
@@ -61,7 +69,7 @@ public sealed class App : Application
 internal static class Paths
 {
     public static readonly string Data =
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ClaudeOverlay");
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ClaudeOverlay"); // data folder keeps its old name so settings and hooks survive the rename
     public static string State => Path.Combine(Data, "state");
     public static string SettingsFile => Path.Combine(Data, "settings.json");
     public static string SoundsDir => Path.Combine(Data, "sounds");

@@ -11,7 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
 
-namespace ClaudeOverlay;
+namespace ClaudeSessionMonitoringOverlay;
 
 public partial class OverlayWindow : Window
 {
@@ -245,7 +245,7 @@ public partial class OverlayWindow : Window
         _tray = new System.Windows.Forms.NotifyIcon
         {
             Icon = MakeTrayIcon(),
-            Text = "Claude overlay",
+            Text = "Claude Session Monitoring Overlay",
             Visible = true,
             ContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(),
         };
@@ -326,7 +326,7 @@ public partial class OverlayWindow : Window
             "Tool events run in the background, so Claude isn't slowed down.\n\n" +
             "Sessions already in progress are picked up from their next turn. " +
             "You can remove it any time in Settings.",
-            "Claude overlay", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            "Claude Session Monitoring Overlay", MessageBoxButton.YesNo, MessageBoxImage.Question);
         if (answer != MessageBoxResult.Yes) return;
 
         if (HookSwitches.Set(_s, desktop: true, on: true))

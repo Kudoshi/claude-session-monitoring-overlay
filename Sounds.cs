@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Media;
 
-namespace ClaudeOverlay;
+namespace ClaudeSessionMonitoringOverlay;
 
 /// <summary>Built-in sounds are synthesized once into small WAV files; custom sounds can be any WAV/MP3 path.</summary>
 internal static class Sounds

@@ -19,7 +19,9 @@ Nothing is sent over the network. The overlay only reads files on your computer.
 
 ## Install
 
-1. Download `ClaudeOverlay-1.0.0-win-x64.zip` from the [latest release](../../releases/latest).
+> **Upgrading from Claude Overlay 1.0.x?** Run `install.ps1` from the new zip. It removes the old copy and its Start menu shortcut, and moves your hook and "Start with Windows" setting to the new app. Your settings are kept.
+
+1. Download `ClaudeSessionMonitoringOverlay-1.1.0-win-x64.zip` from the [latest release](../../releases/latest).
 2. Right-click the zip, choose **Extract All**, and open the extracted folder.
 3. Right-click `install.ps1` and choose **Run with PowerShell**.
    Or, from a PowerShell window in that folder:
@@ -28,7 +30,7 @@ Nothing is sent over the network. The overlay only reads files on your computer.
    powershell -ExecutionPolicy Bypass -File .\install.ps1
    ```
 
-The installer copies the app to `%LOCALAPPDATA%\ClaudeOverlay\app`, adds a **Claude Overlay** Start menu shortcut, and starts it. It doesn't need administrator rights.
+The installer copies the app to `%LOCALAPPDATA%\ClaudeSessionMonitoringOverlay\app`, adds a **Claude Session Monitoring Overlay** Start menu shortcut, and starts it. It doesn't need administrator rights.
 
 > **Windows SmartScreen warning:** the app isn't code-signed yet, so Windows may show "Windows protected your PC" the first time. Click **More info → Run anyway**. You can check the file yourself: it's built from the source in this repository.
 
@@ -76,7 +78,7 @@ There are two switches under **Hooks** in Settings. They share one set of entrie
 
 Tool events run in the background (`async`), so the hook doesn't slow Claude down. Each hook call takes about 0.2 seconds.
 
-Hook entries point at the copy of `ClaudeOverlay.exe` that was installed. If you move the app, turn the hook off and on again in Settings.
+Hook entries point at the copy of `ClaudeSessionMonitoringOverlay.exe` that was installed. If you move the app, turn the hook off and on again in Settings.
 
 ## Troubleshooting
 
@@ -98,7 +100,7 @@ Requires the [.NET 9 SDK](https://dotnet.microsoft.com/download) on Windows.
 dotnet publish -c Release -o dist
 ```
 
-This produces a single self-contained `dist\ClaudeOverlay.exe`. Run `install.ps1` with that file next to it to install it.
+This produces a single self-contained `dist\ClaudeSessionMonitoringOverlay.exe`. Run `install.ps1` with that file next to it to install it.
 
 To regenerate the icon, run `tools\make-icon.ps1`.
 
@@ -115,7 +117,8 @@ To regenerate the icon, run `tools\make-icon.ps1`.
 | `Sounds.cs` | Built-in sounds and custom sound playback |
 | `Native.cs` | Win32 calls |
 | `install.ps1` / `uninstall.ps1` | Per-user install and removal |
+| `LICENSE` | MIT license |
 
 ## License
 
-Not decided yet. Until a license is added, all rights are reserved by the author.
+MIT. See [LICENSE](LICENSE).

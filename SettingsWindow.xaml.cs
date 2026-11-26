@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace ClaudeOverlay;
+namespace ClaudeSessionMonitoringOverlay;
 
 public partial class SettingsWindow : Window
 {
@@ -195,7 +195,7 @@ public partial class SettingsWindow : Window
     {
         bool want = !HookSwitches.IsOn(_s, desktop);
         if (!HookSwitches.Set(_s, desktop, want))
-            MessageBox.Show(this, "Couldn't update ~/.claude/settings.json. See overlay.log for details.", "Claude overlay");
+            MessageBox.Show(this, "Couldn't update ~/.claude/settings.json. See overlay.log for details.", "Claude Session Monitoring Overlay");
         UpdateHookUi();
     }
 }

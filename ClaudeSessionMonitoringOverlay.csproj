@@ -7,12 +7,12 @@
     <UseWindowsForms>true</UseWindowsForms>
     <Nullable>enable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
-    <AssemblyName>ClaudeOverlay</AssemblyName>
-    <RootNamespace>ClaudeOverlay</RootNamespace>
-    <StartupObject>ClaudeOverlay.Program</StartupObject>
+    <AssemblyName>ClaudeSessionMonitoringOverlay</AssemblyName>
+    <RootNamespace>ClaudeSessionMonitoringOverlay</RootNamespace>
+    <StartupObject>ClaudeSessionMonitoringOverlay.Program</StartupObject>
     <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <TieredPGO>true</TieredPGO>
     <PublishReadyToRun>true</PublishReadyToRun>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
@@ -20,9 +20,8 @@
     <PublishSingleFile>true</PublishSingleFile>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <DebugType>none</DebugType>
-    <Version>1.0.0</Version>
-    <Product>Claude Overlay</Product>
-    <Description>Always-on-top overlay for Claude desktop sessions</Description>
+    <Product>Claude Session Monitoring Overlay</Product>
+    <Description>Always-on-top overlay that shows Claude desktop and terminal sessions: needs input, running, and done</Description>
     <ApplicationIcon>app.ico</ApplicationIcon>
   </PropertyGroup>
 
