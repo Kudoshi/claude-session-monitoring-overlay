@@ -1,4 +1,4 @@
-# Claude Overlay
+# Claude Session Monitoring Overlay
 
 A small, always-on-top overlay for Windows that shows what your Claude sessions are doing:
 
